@@ -1,0 +1,43 @@
+version: '3'
+services:
+  sqlite3:
+    container_name: sqlite3_container
+    image: ronelcoe/sqlite3-gogs:1.0
+    stdin_open: true
+    tty: true
+    volumes:
+      - "$PWD/gogs/sqlite3/data:/data"
+    ports:
+      - '3306:3306'
+    restart: unless-stopped
+
+  gogs:
+    container_name: gogs
+    restart: always
+    image: gogs/gogs:0.12
+    ports:
+      - "3022:22"
+      - "3000:3000"
+    volumes:
+      - "$PWD/gogs/data:/data/gogs"
+      - "$PWD/gogs/repo:/data/git/gogs-repositories"
+    environment:
+      - "RUN_CROND=true"
+    depends_on:
+      - sqlite3
+    networks: 
+      - devops_toolchain_network
+
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins
+    user: root
+    ports:
+      - 8080:8080
+    volumes:
+      - "$PWD/jenkins_master:/var/jenkins_home"
+    networks:
+      - devops_toolchain_network
+
+networks:
+  devops_toolchain_network:
