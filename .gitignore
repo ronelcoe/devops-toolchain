@@ -2,3 +2,4 @@ gogs/
 jenkins_master/
 sonarqube/
 nexus/
+**/.DS_Store
